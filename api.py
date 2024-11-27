@@ -50,7 +50,7 @@ def hola_mundo():
 
     return respuesta
 
-
+# USUARIOS
 @app.get("/usuarios/{id}/compras/{id_compra}")
 def compras_usuario_por_id(id: int, id_compra: int):
     print("buscando compra con id:", id_compra, " del usuario con id:", id)
@@ -68,11 +68,11 @@ def usuario_por_id(id:int, sesion:Session=Depends(generador_sesion)):
     print("Api consultando usuario por id")
     return repo.usuario_por_id(sesion, id)
 
+#/usuarios?edad_min={edadmin}&edad_max={edadMax}
 @app.get("/usuarios")
-def lista_usuarios(*,lote:int=10,pag:int,orden:Optional[str]=None): #parametros de consulta ?lote=10&pag=1
-    print("lote:",lote, " pag:", pag, " orden:", orden)
-    #simulamos la consulta
-    return usuarios
+def lista_usuarios(edad_min:int, edad_max:int, sesion:Session=Depends(generador_sesion)):
+    print("/usuarios?edad_min={edadMin}&edad_max={edadMax}")
+    return repo.usuario_por_rango_edad(sesion, edad_min, edad_max)
 
 @app.post("/usuarios")
 def guardar_usuario(usuario:UsuarioBase, parametro1:str):
@@ -113,6 +113,19 @@ def borrar_usuario(id:int):
     
     return {"status_borrado", "ok"}
 
+# COMPRAS
+#"/compras?id_usuario={id_usr}&precio={p}"
+@app.get("/compras")
+def lista_compras(id_usuario:int, precio:float, sesion:Session=Depends(generador_sesion)):
+    print("/compras?id_usuario={id_usr}&precio={p}")
+    return repo.devuelve_compras_por_usuario_precio(sesion, id_usuario, precio)
+
+@app.get("/compras/{id}")
+def compra_por_id(id:int, sesion:Session=Depends(generador_sesion)):
+    print("Api consultando compra por id")
+    return repo.compra_por_id(sesion, id)
+
+# FOTOS
 @app.post("/fotos")
 async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:UploadFile=File(...)):
     print("titulo:", titulo)
@@ -130,12 +143,12 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 
     return {"titulo":titulo, "descripcion":descripcion, "foto":foto.filename}
 
-@app.get("/compras/{id}")
-def compra_por_id(id:int, sesion:Session=Depends(generador_sesion)):
-    print("Api consultando compra por id")
-    return repo.compra_por_id(sesion, id)
-
 @app.get("/fotos/{id}")
 def foto_por_id(id:int, sesion:Session=Depends(generador_sesion)):
     print("Api consultando foto por id")
     return repo.foto_por_id(sesion, id)
+
+@app.get("/fotos")
+def lista_fotos(sesion:Session=Depends(generador_sesion)):
+    print("Api consultando lista de fotos")
+    return repo.foto(sesion)
