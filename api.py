@@ -103,8 +103,6 @@ def guardar_usuario(usuario:UsuarioBase, parametro1:str):
 
     return usr_nuevo
 
-#@app.put("/compras/{id}")
-#@app.put("/fotos/{id}")
 @app.put("/usuario/{id}")
 def actualizar_usuario(id:int,info_usuario:esquemas.UsuarioBase,sesion:Session=Depends(generador_sesion)):
     return repo.actualiza_usuario(sesion,id,info_usuario)
@@ -129,6 +127,10 @@ def compra_por_id(id:int, sesion:Session=Depends(generador_sesion)):
 def lista_compras(id_usuario:int,precio:float,sesion:Session=Depends(generador_sesion)):
     print("/compras?id_usuario={id_usr}&precio={p}")
     return repo.devuelve_compras_por_usuario_precio(sesion,id_usuario,precio)
+
+@app.put("/compras/{id}")
+def acrualizar_compra(id:int, info_compra:esquemas.CompraBase, sesion:Session=Depends(generador_sesion)):
+    return repo.actualiza_compras(sesion, id, info_compra)
 
 ## Peticiones de fotos
 @app.get("/fotos/{id}")
@@ -157,3 +159,5 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
         imagen.write(contenido)
 
     return {"titulo":titulo, "descripcion":descripcion, "foto":foto.filename}
+
+#@app.put("/fotos/{id}")

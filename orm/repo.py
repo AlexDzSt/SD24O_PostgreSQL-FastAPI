@@ -107,6 +107,22 @@ def devuelve_fotos(sesion:Session):
     print("select * from app.fotos")
     return sesion.query(modelos.Foto).all()
 
+# PUT '/fotos/{id}'
+def actualiza_foto(sesion:Session, id_foto:int, foto_esquema:esquemas.FotoBase):
+    foto_bd = foto_por_id(sesion, id_foto)
+    if foto_bd is not None:
+        foto_bd.titulo = foto_esquema.titulo
+        foto_bd.descripcion = foto_esquema.descripcion
+        foto_bd.ruta = foto_esquema.ruta
+        
+        sesion.commit()
+        sesion.refresh(foto_bd)
+        print(foto_esquema)
+        return(foto_esquema)
+    else:
+        respuesta = {"mensaje":"No existe la foto"}
+        return respuesta
+
 # ------------ Peticiones a compras ---------------------
 # GET '/compras/{id}'
 # select * from app.compras where id = id_compra
@@ -125,3 +141,18 @@ def devuelve_compras(sesion:Session):
 def devuelve_compras_por_usuario_precio(sesion:Session, id_usr:int, p:float):
     print("select * from app.compras where id_usuario=id_usr and precio>=p")
     return sesion.query(modelos.Compra).filter(and_(modelos.Compra.id_usuario==id_usr, modelos.Compra.precio>=p)).all()
+
+#PUT '/compras/{id}'
+def actualiza_compras(sesion:Session, id_comp:int, comp_esquema:esquemas.CompraBase):
+    compra_bd = compra_por_id(sesion, id_comp)
+    if compra_bd is not None:
+        compra_bd.producto = comp_esquema.producto
+        compra_bd.precio = comp_esquema.precio
+        
+        sesion.commit()
+        sesion.refresh(compra_bd)
+        print(comp_esquema)
+        return(comp_esquema)
+    else:
+        respuesta = {"mensaje":"No existe la compra"}
+        return respuesta
