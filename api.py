@@ -160,4 +160,6 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 
     return {"titulo":titulo, "descripcion":descripcion, "foto":foto.filename}
 
-#@app.put("/fotos/{id}")
+@app.put("/fotos/{id}")
+def actualiza_foto(id:int, info_foto:esquemas.FotoBase, sesion:Session=Depends(generador_sesion)):
+    return repo.actualiza_foto(sesion, id, info_foto)
