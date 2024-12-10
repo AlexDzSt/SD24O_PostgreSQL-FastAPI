@@ -89,19 +89,9 @@ def lista_usuarios(sesion:Session=Depends(generador_sesion)):
 #    return usuarios
 
 @app.post("/usuarios")
-def guardar_usuario(usuario:UsuarioBase, parametro1:str):
-    print("usuario a guardar:", usuario, ", parametro1:", parametro1)
-    #simulamos guardado en la base.
-    
-    usr_nuevo = {}
-    usr_nuevo["id"] = len(usuarios)
-    usr_nuevo["nombre"] = usuario.nombre
-    usr_nuevo["edad"] = usuario.edad
-    usr_nuevo["domicilio"] = usuario.domicilio
-
-    usuarios.append(usuario)
-
-    return usr_nuevo
+def guardar_usuario(usuario:esquemas.UsuarioBase, sesion:Session=Depends(generador_sesion)):
+    print(usuario)
+    return repo.guardar_usuario(sesion, usuario)
 
 @app.put("/usuario/{id}")
 def actualizar_usuario(id:int,info_usuario:esquemas.UsuarioBase,sesion:Session=Depends(generador_sesion)):
@@ -129,8 +119,12 @@ def lista_compras(id_usuario:int,precio:float,sesion:Session=Depends(generador_s
     return repo.devuelve_compras_por_usuario_precio(sesion,id_usuario,precio)
 
 @app.put("/compras/{id}")
-def acrualizar_compra(id:int, info_compra:esquemas.CompraBase, sesion:Session=Depends(generador_sesion)):
+def actualizar_compra(id:int, info_compra:esquemas.CompraBase, sesion:Session=Depends(generador_sesion)):
     return repo.actualiza_compras(sesion, id, info_compra)
+
+@app.post("/usuario/{id}/compras")
+def guardar_compra_usuario(id:int, info_compra:esquemas.CompraBase, sesion:Session=Depends(generador_sesion)):
+    return repo.guardar_compra_usuario(sesion, id, info_compra)
 
 ## Peticiones de fotos
 @app.get("/fotos/{id}")
@@ -163,3 +157,5 @@ async def guardar_foto(titulo:str=Form(None), descripcion:str=Form(...), foto:Up
 @app.put("/fotos/{id}")
 def actualiza_foto(id:int, info_foto:esquemas.FotoBase, sesion:Session=Depends(generador_sesion)):
     return repo.actualiza_foto(sesion, id, info_foto)
+
+#app.post("/usuario/{id}/foto")

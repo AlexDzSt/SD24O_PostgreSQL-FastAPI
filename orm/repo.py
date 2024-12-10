@@ -72,7 +72,25 @@ def actualiza_usuario(sesion:Session,id_usuario:int,usr_esquema:esquemas.Usuario
     else:
         respuesta = {"mensaje":"No existe el usuario"}
         return respuesta
-
+    
+# POST '/usuarios/'
+def guardar_usuario(sesion:Session, usr_nuevo:esquemas.UsuarioBase):
+    #1.Crear un nuevo objeto de la clase modelo Usuario
+    usr_bd = modelos.Usuario()
+    #2.Llenamos el nuevo objeto con los parametros que nos paso el usuario
+    usr_bd.nombre = usr_nuevo.nombre
+    usr_bd.edad = usr_nuevo.edad
+    usr_bd.domicilio = usr_nuevo.domicilio
+    usr_bd.email = usr_nuevo.email
+    usr_bd.password = usr_nuevo.password
+    #3.Insertar el nuevo objeto a la BD
+    sesion.add(usr_bd)
+    #4.Confirmamos el cambio
+    sesion.commit()
+    #5.Hacemos un refresh
+    sesion.refresh(usr_bd)
+    return usr_bd
+        
 # DELETE '/usuarios/{id}'
 # delete from app.usuarios where id=id_usuario
 def borra_usuario_por_id(sesion:Session,id_usuario:int):
@@ -155,4 +173,25 @@ def actualiza_compras(sesion:Session, id_comp:int, comp_esquema:esquemas.CompraB
         return(comp_esquema)
     else:
         respuesta = {"mensaje":"No existe la compra"}
+        return respuesta
+    
+# POST '/usuario/{id}/compras'
+def guardar_compra_usuario(sesion:Session, id_usr:int, compra_nueva:esquemas.CompraBase):
+    usr = usuario_por_id(sesion, id_usr)
+    if usr is not None:
+        #1.Crear un nuevo objeto de la clase modelo Compra
+        compra_bd = modelos.Compra()
+        #2.Llenamos el nuevo objeto con los parametros que nos paso el usuario
+        compra_bd.id_usuario = id_usr
+        compra_bd.producto = compra_nueva.producto
+        compra_bd.precio = compra_nueva.precio
+        #3.Insertar el nuevo objeto a la BD
+        sesion.add(compra_bd)
+        #4.Confirmamos el cambio
+        sesion.commit()
+        #5.Hacemos un refresh
+        sesion.refresh(compra_bd)
+        return compra_bd
+    else:
+        respuesta = {"mensaje":"El usuario no existe"}
         return respuesta
